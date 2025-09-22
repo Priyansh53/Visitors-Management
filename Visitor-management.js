@@ -1,8 +1,11 @@
 let stream = null;
 let photoData = null;
 let allVisitors = [];
+let displayedVisitors = [];
 let currentGatePassVisitor = null;
-const companyLogoUrl = './logo.jpg'; // Placeholder for company logo
+const companyLogoUrl = './logo.png'; // Placeholder for company logo
+let currentPage = 1;
+const visitorsPerPage = 10;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -132,7 +135,9 @@ function registerVisitor() {
         localStorage.setItem('visitors', JSON.stringify(visitors));
 
         allVisitors = visitors;
-        displayVisitors(allVisitors);
+        displayedVisitors = allVisitors;
+        currentPage = 1;
+        displayVisitors(displayedVisitors);
         updateStats();
 
         document.getElementById('visitorForm').reset();
@@ -166,7 +171,9 @@ function updateVisitor(id) {
 
             localStorage.setItem('visitors', JSON.stringify(visitors));
             allVisitors = visitors;
-            displayVisitors(allVisitors);
+            displayedVisitors = allVisitors;
+            currentPage = 1;
+            displayVisitors(displayedVisitors);
 
             document.getElementById('visitorForm').reset();
             document.getElementById('editId').value = '';
@@ -191,7 +198,9 @@ function updateVisitor(id) {
 function loadVisitors() {
     try {
         allVisitors = JSON.parse(localStorage.getItem('visitors') || '[]');
-        displayVisitors(allVisitors);
+        displayedVisitors = allVisitors;
+        currentPage = 1;
+        displayVisitors(displayedVisitors);
     } catch (error) {
         showToast("Error loading visitor data", true);
         allVisitors = [];
@@ -201,19 +210,28 @@ function loadVisitors() {
 function displayVisitors(visitors) {
     const tbody = document.getElementById('visitorList');
     const emptyState = document.getElementById('emptyState');
+    const pagination = document.getElementById('pagination');
+    const table = document.getElementById('visitorTable');
 
     if (visitors.length === 0) {
         tbody.innerHTML = '';
         emptyState.style.display = 'block';
-        document.getElementById('visitorTable').style.display = 'none';
+        table.style.display = 'none';
+        pagination.style.display = 'none';
         return;
     }
 
     emptyState.style.display = 'none';
-    document.getElementById('visitorTable').style.display = 'table';
+    table.style.display = 'table';
+    pagination.style.display = 'flex';
     tbody.innerHTML = '';
 
-    visitors.forEach(visitor => {
+    const totalPages = Math.ceil(visitors.length / visitorsPerPage);
+    const startIndex = (currentPage - 1) * visitorsPerPage;
+    const endIndex = Math.min(startIndex + visitorsPerPage, visitors.length);
+    const paginatedVisitors = visitors.slice(startIndex, endIndex);
+
+    paginatedVisitors.forEach(visitor => {
         const row = tbody.insertRow();
 
         const photoCell = row.insertCell();
@@ -299,6 +317,23 @@ function displayVisitors(visitors) {
         gatePassBtn.onclick = () => generateGatePass(visitor.id);
         actionsCell.appendChild(gatePassBtn);
     });
+
+    document.getElementById('pageInfo').textContent = `${currentPage} of ${totalPages}`;
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        displayVisitors(displayedVisitors);
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(displayedVisitors.length / visitorsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        displayVisitors(displayedVisitors);
+    }
 }
 
 function showVisitorDetails(visitorId) {
@@ -343,7 +378,8 @@ function checkOutVisitor(visitorId) {
 
             localStorage.setItem('visitors', JSON.stringify(visitors));
             allVisitors = visitors;
-            displayVisitors(allVisitors);
+            displayedVisitors = allVisitors;
+            displayVisitors(displayedVisitors);
             updateStats();
 
             showToast('Visitor checked out successfully');
@@ -408,7 +444,9 @@ function deleteVisitor(visitorId) {
                 visitors.splice(visitorIndex, 1);
                 localStorage.setItem('visitors', JSON.stringify(visitors));
                 allVisitors = visitors;
-                displayVisitors(allVisitors);
+                displayedVisitors = allVisitors;
+                currentPage = 1;
+                displayVisitors(displayedVisitors);
                 updateStats();
                 showToast(`Visitor ${visitorName} deleted successfully`);
             }
@@ -475,40 +513,42 @@ function downloadGatePass() {
             format: 'a6'
         });
 
+        const width = doc.internal.pageSize.getWidth(); // 105mm for A6
+        const centerX = width / 2;
+
         const primaryColor = [79, 70, 229];
         const secondaryColor = [124, 58, 237];
         const textColor = [17, 24, 39];
         const grayColor = [107, 114, 128];
 
         doc.setFillColor(...primaryColor);
-        doc.rect(0, 0, 105, 20, 'F');
+        doc.rect(0, 0, width, 20, 'F');
         doc.setFontSize(16);
         doc.setFont(undefined, 'bold');
         doc.setTextColor(255, 255, 255);
-        doc.text('VISITOR GATE PASS', 52.5, 12, { align: 'center' });
+        doc.text('VISITOR GATE PASS', centerX, 12, { align: 'center' });
         
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
         doc.setTextColor(...grayColor);
-        doc.text('Professional Visitor Management', 52.5, 25, { align: 'center' });
-        doc.text(new Date().toLocaleDateString(), 52.5, 30, { align: 'center' });
+        doc.text(new Date().toLocaleDateString(), centerX, 25, { align: 'center' });
 
         doc.setDrawColor(209, 213, 219);
         doc.setLineWidth(0.5);
-        doc.rect(10, 35, 85, 103, 'S');
+        doc.rect(10, 35, width - 20, 103, 'S');
 
         if (currentGatePassVisitor.photo) {
             try {
-                doc.addImage(currentGatePassVisitor.photo, 'JPEG', 30, 40, 45, 45);
+                doc.addImage(currentGatePassVisitor.photo, 'JPEG', centerX - 22.5, 40, 45, 45);
             } catch (e) {
                 doc.setFontSize(30);
                 doc.setTextColor(209, 213, 219);
-                doc.text('👤', 52.5, 65, { align: 'center' });
+                doc.text('👤', centerX, 65, { align: 'center' });
             }
         } else {
             doc.setFontSize(30);
             doc.setTextColor(209, 213, 219);
-            doc.text('👤', 52.5, 65, { align: 'center' });
+            doc.text('👤', centerX, 65, { align: 'center' });
         }
 
         doc.setTextColor(...textColor);
@@ -535,18 +575,18 @@ function downloadGatePass() {
         });
 
         doc.setFillColor(249, 250, 251);
-        doc.rect(35, yPosition, 35, 35, 'F');
+        doc.rect(centerX - 17.5, yPosition, 35, 35, 'F');
         doc.setTextColor(...primaryColor);
         doc.setFontSize(10);
-        doc.text('QR CODE', 52.5, yPosition + 18, { align: 'center' });
+        doc.text('QR CODE', centerX, yPosition + 18, { align: 'center' });
 
         doc.setDrawColor(...primaryColor);
         doc.setLineWidth(0.3);
-        doc.line(10, 135, 95, 135);
+        doc.line(10, 135, width - 10, 135);
         doc.setTextColor(...grayColor);
         doc.setFontSize(9);
-        doc.text('Please keep this pass visible at all times', 52.5, 140, { align: 'center' });
-        doc.text(`Valid for: ${currentGatePassVisitor.date}`, 52.5, 145, { align: 'center' });
+        doc.text('Please keep this pass visible at all times', centerX, 140, { align: 'center' });
+        doc.text(`Valid for: ${currentGatePassVisitor.date}`, centerX, 145, { align: 'center' });
 
         const fileName = `gate_pass_${currentGatePassVisitor.name.replace(/\s+/g, '_')}_${currentGatePassVisitor.date}.pdf`;
         doc.save(fileName);
@@ -570,6 +610,10 @@ function printGatePass() {
             <title>Visitor Gate Pass</title>
             <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
             <link rel="stylesheet" href="./Visitors-management.css">
+            <style>
+                body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+                .gate-pass { margin: auto; }
+            </style>
         </head>
         <body>
             <div class="gate-pass">
@@ -614,7 +658,9 @@ function filterVisitors() {
         filteredVisitors = filteredVisitors.filter(v => v.purpose === purposeFilter);
     }
 
-    displayVisitors(filteredVisitors);
+    displayedVisitors = filteredVisitors;
+    currentPage = 1;
+    displayVisitors(displayedVisitors);
     showToast(`Found ${filteredVisitors.length} visitors matching criteria`);
 }
 
@@ -622,7 +668,9 @@ function resetFilters() {
     document.getElementById('fromDate').value = '';
     document.getElementById('toDate').value = '';
     document.getElementById('purposeFilter').value = '';
-    displayVisitors(allVisitors);
+    displayedVisitors = allVisitors;
+    currentPage = 1;
+    displayVisitors(displayedVisitors);
     showToast('Filters reset');
 }
 
@@ -656,33 +704,37 @@ function generatePDF() {
             format: 'a4'
         });
 
+        const width = doc.internal.pageSize.getWidth(); // 297mm for A4 landscape
+        const centerX = width / 2;
+
         const primaryColor = [79, 70, 229];
         const secondaryColor = [124, 58, 237];
         const textColor = [17, 24, 39];
         const grayColor = [107, 114, 128];
+        const whiteColor = [255, 255, 255];
 
         function drawHeader(pageNumber, totalPages) {
-            doc.setFillColor(...primaryColor);
-            doc.rect(0, 0, 297, 20, 'F');
-            doc.setTextColor(255, 255, 255);
+            doc.setFillColor(...whiteColor);
+            doc.rect(0, 0, width, 20, 'F');
+            doc.setTextColor(0,0,0);
             doc.setFontSize(18);
             doc.setFont(undefined, 'bold');
-            doc.text('VISITOR MANAGEMENT REPORT', 148.5, 14, { align: 'center' });
+            doc.text('VISITOR MANAGEMENT REPORT', centerX, 14, { align: 'center' });
             doc.setFontSize(10);
             doc.setFont(undefined, 'normal');
-            doc.text('Company Logo', 20, 14); // Text placeholder for logo in PDF
-            doc.text(`Page ${pageNumber} of ${totalPages}`, 277, 14, { align: 'right' });
+            doc.addImage(companyLogoUrl, 'PNG', 20, 3.5, 30, 15);    
+            doc.text(`Page ${pageNumber} of ${totalPages}`, width - 20, 14, { align: 'right' });
         }
 
         function drawFooter(pageNumber, totalPages) {
             doc.setDrawColor(...grayColor);
             doc.setLineWidth(0.3);
-            doc.line(20, 190, 277, 190);
+            doc.line(20, 190, width - 20, 190);
             doc.setTextColor(...grayColor);
             doc.setFontSize(9);
             doc.text('Professional Visitor Management System', 20, 195);
             doc.text(`Generated on ${new Date().toLocaleString()}`, 20, 200);
-            doc.text('Confidential Document - For Internal Use Only', 277, 200, { align: 'right' });
+            doc.text('Confidential Document - For Internal Use Only', width - 20, 200, { align: 'right' });
         }
 
         doc.setTextColor(...textColor);
@@ -727,10 +779,10 @@ function generatePDF() {
 
         function drawTableHeader(y) {
             doc.setFillColor(249, 250, 251);
-            doc.rect(20, y - 5, 277 - 20, 10, 'F');
+            doc.rect(20, y - 5, width - 40, 10, 'F');
             doc.setDrawColor(...grayColor);
             doc.setLineWidth(0.3);
-            doc.rect(20, y - 5, 277 - 20, 10);
+            doc.rect(20, y - 5, width - 40, 10);
             let currentX = 20;
             headers.forEach(header => {
                 if (currentX > 20) {
@@ -750,11 +802,11 @@ function generatePDF() {
         function drawTableRow(visitor, y, index) {
             if (index % 2 === 0) {
                 doc.setFillColor(249, 250, 251);
-                doc.rect(20, y, 277 - 20, rowHeight, 'F');
+                doc.rect(20, y, width - 40, rowHeight, 'F');
             }
             doc.setDrawColor(209, 213, 219);
             doc.setLineWidth(0.2);
-            doc.rect(20, y, 277 - 20, rowHeight);
+            doc.rect(20, y, width - 40, rowHeight);
             let currentX = 20;
             headers.forEach(header => {
                 if (currentX > 20) {
@@ -852,7 +904,7 @@ function generatePDF() {
             currentY = drawTableRow(visitor, currentY, index);
         });
 
-        const totalPages = doc.internal.getNumberOfPages();
+        let totalPages = doc.internal.getNumberOfPages();
         for (let i = 1; i <= totalPages; i++) {
             doc.setPage(i);
             drawHeader(i, totalPages);
@@ -862,6 +914,7 @@ function generatePDF() {
         if (visitorsForPDF.length > 0) {
             doc.addPage();
             pageNumber++;
+            totalPages++;
             drawHeader(pageNumber, totalPages);
 
             doc.setFontSize(16);
@@ -983,7 +1036,9 @@ function searchVisitors(query) {
         visitor.toMeet.toLowerCase().includes(query.toLowerCase()) ||
         visitor.purpose.toLowerCase().includes(query.toLowerCase())
     );
-    displayVisitors(filteredVisitors);
+    displayedVisitors = filteredVisitors;
+    currentPage = 1;
+    displayVisitors(displayedVisitors);
 }
 
 window.addEventListener('beforeunload', function() {
