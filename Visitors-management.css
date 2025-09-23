@@ -10,6 +10,34 @@ body {
     min-height: 100vh;
     color: #1f2937;
 }
+/* Base Logo */
+.logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    background: white;
+    border-radius: 8px;
+    padding: 5px;
+    border: 2px solid #e5e7eb; /* Light gray border */
+    display: inline-block;
+}
+
+/* For Gate Pass header */
+.logo--gatepass {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #d1d5db; /* Slightly lighter border */
+    padding: 3px;
+}
+
+/* For Main App header */
+.logo--header {
+    width: auto;
+    height: 100px;
+    border: none;
+    padding: 0;
+    background: transparent;
+}
 
 .container {
     max-width: 100%;

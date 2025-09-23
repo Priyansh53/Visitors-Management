@@ -99,7 +99,7 @@ document.getElementById('visitorForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const editId = document.getElementById('editId').value;
-    
+
     if (!photoData && !editId) {
         showToast("Please capture a photo before submitting", true);
         return;
@@ -164,7 +164,7 @@ function updateVisitor(id) {
             visitors[visitorIndex].purpose = document.getElementById('purpose').value;
             visitors[visitorIndex].toMeet = document.getElementById('toMeet').value.trim();
             visitors[visitorIndex].department = document.getElementById('department').value.trim();
-            
+
             if (photoData) {
                 visitors[visitorIndex].photo = photoData;
             }
@@ -182,7 +182,7 @@ function updateVisitor(id) {
                     <i class="fas fa-user-check"></i> Register Visitor
                 </button>
             `;
-            
+
             photoData = null;
             document.getElementById('capturedImage').style.display = 'none';
             document.getElementById('videoElement').style.display = 'block';
@@ -279,7 +279,7 @@ function displayVisitors(visitors) {
 
         const actionsCell = row.insertCell();
         actionsCell.className = 'action-buttons';
-        
+
         if (visitor.status === 'active') {
             const checkOutBtn = document.createElement('button');
             checkOutBtn.className = 'btn btn-warning action-btn';
@@ -403,7 +403,7 @@ function editVisitor(visitorId) {
             document.getElementById('purpose').value = visitor.purpose;
             document.getElementById('toMeet').value = visitor.toMeet;
             document.getElementById('department').value = visitor.department || '';
-            
+
             document.getElementById('formButtons').innerHTML = `
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">
                     <i class="fas fa-save"></i> Update Visitor
@@ -412,9 +412,9 @@ function editVisitor(visitorId) {
                     <i class="fas fa-times"></i> Cancel Edit
                 </button>
             `;
-            
+
             document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
-            
+
             showToast(`Editing ${visitor.name}'s details`);
         }
     } catch (error) {
@@ -463,7 +463,7 @@ function generateGatePass(visitorId) {
 
         if (visitor) {
             currentGatePassVisitor = visitor;
-            
+
             const gatePassContent = document.getElementById('gatePassContent');
             gatePassContent.innerHTML = `
                 <div class="gate-pass-header">
@@ -473,7 +473,7 @@ function generateGatePass(visitorId) {
                 </div>
                 <div class="gate-pass-body">
                     <div class="gate-pass-photo">
-                        ${visitor.photo ? `<img src="${visitor.photo}" alt="${visitor.name}">` : 
+                        ${visitor.photo ? `<img src="${visitor.photo}" alt="${visitor.name}">` :
                         '<i class="fas fa-user-circle" style="font-size: 5rem; color: #ccc;"></i>'}
                     </div>
                     <div class="gate-pass-info">
@@ -494,7 +494,7 @@ function generateGatePass(visitorId) {
                     <p>Valid for: ${visitor.date}</p>
                 </div>
             `;
-            
+
             openModal('gatePassModal');
         }
     } catch (error) {
@@ -504,7 +504,7 @@ function generateGatePass(visitorId) {
 
 function downloadGatePass() {
     if (!currentGatePassVisitor) return;
-    
+
     try {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({
@@ -527,7 +527,7 @@ function downloadGatePass() {
         doc.setFont(undefined, 'bold');
         doc.setTextColor(255, 255, 255);
         doc.text('VISITOR GATE PASS', centerX, 12, { align: 'center' });
-        
+
         doc.setFontSize(10);
         doc.setFont(undefined, 'normal');
         doc.setTextColor(...grayColor);
@@ -590,7 +590,7 @@ function downloadGatePass() {
 
         const fileName = `gate_pass_${currentGatePassVisitor.name.replace(/\s+/g, '_')}_${currentGatePassVisitor.date}.pdf`;
         doc.save(fileName);
-        
+
         showToast('Gate pass downloaded successfully!');
     } catch (error) {
         console.error('Error generating PDF:', error);
@@ -722,7 +722,7 @@ function generatePDF() {
             doc.text('VISITOR MANAGEMENT REPORT', centerX, 14, { align: 'center' });
             doc.setFontSize(10);
             doc.setFont(undefined, 'normal');
-            doc.addImage(companyLogoUrl, 'PNG', 20, 3.5, 30, 15);    
+            doc.addImage(companyLogoUrl, 'PNG', 20, 3.5, 30, 15);
             doc.text(`Page ${pageNumber} of ${totalPages}`, width - 20, 14, { align: 'right' });
         }
 
