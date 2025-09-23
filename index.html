@@ -1,301 +1,432 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Professional Visitor Management System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./Visitors-management.css">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./Visitors-management.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-building"></i> Professional Visitor Management System</h1>
-            <p>Streamlined visitor registration and monitoring solution</p>
+  <div class="header">
+    <img src="./logo.png" alt="Company Logo" class="logo logo--header" />
+    
+  </div>
+</div>
+
+      <div class="main-content">
+        <div class="form-section">
+          <h2><i class="fas fa-user-plus"></i> Register Visitor</h2>
+          <form id="visitorForm">
+            <input type="hidden" id="editId" value="" />
+            <div class="form-group">
+              <label for="name"><i class="fas fa-user"></i> Full Name *</label>
+              <input
+                type="text"
+                id="name"
+                class="form-control"
+                required
+                placeholder="Enter visitor's full name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="company"
+                ><i class="fas fa-briefcase"></i> Company/Organization</label
+              >
+              <input
+                type="text"
+                id="company"
+                class="form-control"
+                placeholder="Enter company name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone"
+                ><i class="fas fa-phone"></i> Phone Number *</label
+              >
+              <input
+                type="tel"
+                id="phone"
+                class="form-control"
+                required
+                placeholder="Enter phone number"
+              />
+            </div>
+            <div class="form-group">
+              <label for="email"
+                ><i class="fas fa-envelope"></i> Email Address</label
+              >
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                placeholder="Enter email address"
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-camera"></i> Visitor Photo</label>
+              <div class="camera-section">
+                <video id="videoElement" autoplay muted></video>
+                <canvas id="capturedImage"></canvas>
+                <div class="camera-controls">
+                  <button
+                    type="button"
+                    onclick="CameraManager.startCamera()"
+                    class="btn btn-secondary"
+                  >
+                    <i class="fas fa-video"></i> Start Camera
+                  </button>
+                  <button
+                    type="button"
+                    onclick="CameraManager.capturePhoto()"
+                    class="btn btn-warning"
+                  >
+                    <i class="fas fa-camera"></i> Capture Photo
+                  </button>
+                  <button
+                    type="button"
+                    onclick="CameraManager.retakePhoto()"
+                    class="btn btn-secondary"
+                  >
+                    <i class="fas fa-redo"></i> Retake
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="purpose"
+                ><i class="fas fa-clipboard-list"></i> Purpose of Visit *</label
+              >
+              <select id="purpose" class="form-control" required>
+                <option value="">Select purpose</option>
+                <option value="Business Meeting">Business Meeting</option>
+                <option value="Interview">Interview</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Consultation">Consultation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="toMeet"
+                ><i class="fas fa-user-tie"></i> Person to Meet *</label
+              >
+              <input
+                type="text"
+                id="toMeet"
+                class="form-control"
+                required
+                placeholder="Enter host name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="department"
+                ><i class="fas fa-building"></i> Department</label
+              >
+              <input
+                type="text"
+                id="department"
+                class="form-control"
+                placeholder="Enter department"
+              />
+            </div>
+            <div id="formButtons">
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                <i class="fas fa-user-check"></i> Register Visitor
+              </button>
+            </div>
+          </form>
         </div>
 
-        <div class="main-content">
-            <div class="form-section">
-                <h2><i class="fas fa-user-plus"></i> Register Visitor</h2>
-                <form id="visitorForm">
-                    <input type="hidden" id="editId" value="">
-                    <div class="form-group">
-                        <label for="name"><i class="fas fa-user"></i> Full Name *</label>
-                        <input type="text" id="name" class="form-control" required placeholder="Enter visitor's full name">
-                    </div>
-                    <div class="form-group">
-                        <label for="company"><i class="fas fa-briefcase"></i> Company/Organization</label>
-                        <input type="text" id="company" class="form-control" placeholder="Enter company name">
-                    </div>
-                    <div class="form-group">
-                        <label for="phone"><i class="fas fa-phone"></i> Phone Number *</label>
-                        <input type="tel" id="phone" class="form-control" required placeholder="Enter phone number">
-                    </div>
-                    <div class="form-group">
-                        <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
-                        <input type="email" id="email" class="form-control" placeholder="Enter email address">
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-camera"></i> Visitor Photo</label>
-                        <div class="camera-section">
-                            <video id="videoElement" autoplay muted></video>
-                            <canvas id="capturedImage"></canvas>
-                            <div class="camera-controls">
-                                <button type="button" onclick="startCamera()" class="btn btn-secondary">
-                                    <i class="fas fa-video"></i> Start Camera
-                                </button>
-                                <button type="button" onclick="capturePhoto()" class="btn btn-warning">
-                                    <i class="fas fa-camera"></i> Capture Photo
-                                </button>
-                                <button type="button" onclick="retakePhoto()" class="btn btn-secondary">
-                                    <i class="fas fa-redo"></i> Retake
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="purpose"><i class="fas fa-clipboard-list"></i> Purpose of Visit *</label>
-                        <select id="purpose" class="form-control" required>
-                            <option value="">Select purpose</option>
-                            <option value="Business Meeting">Business Meeting</option>
-                            <option value="Interview">Interview</option>
-                            <option value="Delivery">Delivery</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Consultation">Consultation</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="toMeet"><i class="fas fa-user-tie"></i> Person to Meet *</label>
-                        <input type="text" id="toMeet" class="form-control" required placeholder="Enter host name">
-                    </div>
-                    <div class="form-group">
-                        <label for="department"><i class="fas fa-building"></i> Department</label>
-                        <input type="text" id="department" class="form-control" placeholder="Enter department">
-                    </div>
-                    <div id="formButtons">
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">
-                            <i class="fas fa-user-check"></i> Register Visitor
-                        </button>
-                    </div>
-                </form>
+        <div class="data-section">
+          <h2><i class="fas fa-users"></i> Visitor Records</h2>
+          <div class="stats-section">
+            <div class="stat-card">
+              <h3 id="totalVisitors">0</h3>
+              <p>Total Visitors</p>
             </div>
-
-            <div class="data-section">
-                <h2><i class="fas fa-users"></i> Visitor Records</h2>
-                <div class="stats-section">
-                    <div class="stat-card">
-                        <h3 id="totalVisitors">0</h3>
-                        <p>Total Visitors</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="todayVisitors">0</h3>
-                        <p>Today's Visitors</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3 id="activeVisitors">0</h3>
-                        <p>Currently Inside</p>
-                    </div>
-                </div>
-                <div class="filter-section">
-                    <div class="filter-group">
-                        <label for="fromDate">From Date</label>
-                        <input type="date" id="fromDate" class="form-control">
-                    </div>
-                    <div class="filter-group">
-                        <label for="toDate">To Date</label>
-                        <input type="date" id="toDate" class="form-control">
-                    </div>
-                    <div class="filter-group">
-                        <label for="purposeFilter">Purpose</label>
-                        <select id="purposeFilter" class="form-control">
-                            <option value="">All Purposes</option>
-                            <option value="Business Meeting">Business Meeting</option>
-                            <option value="Interview">Interview</option>
-                            <option value="Delivery">Delivery</option>
-                            <option value="Maintenance">Maintenance</option>
-                            <option value="Consultation">Consultation</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="filterVisitors()" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Filter
-                        </button>
-                        <button onclick="resetFilters()" class="btn btn-secondary">
-                            <i class="fas fa-times"></i> Reset
-                        </button>
-                        <button onclick="generatePDF()" class="btn btn-success">
-                            <i class="fas fa-file-pdf"></i> Export PDF
-                        </button>
-                    </div>
-                </div>
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Loading visitors...</p>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table class="visitor-table" id="visitorTable">
-                        <thead>
-                            <tr>
-                                <th>Photo</th>
-                                <th>Name</th>
-                                <th>Company</th>
-                                <th>Phone</th>
-                                <th>Purpose</th>
-                                <th>Host</th>
-                                <th>Check In</th>
-                                <th>Check Out</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="visitorList"></tbody>
-                    </table>
-                </div>
-                <div class="pagination" id="pagination">
-                    <button onclick="prevPage()" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Previous</button>
-                    <span id="pageInfo"></span>
-                    <button onclick="nextPage()" class="btn btn-secondary">Next <i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="empty-state" id="emptyState" style="display: none;">
-                    <i class="fas fa-users"></i>
-                    <h3>No visitors found</h3>
-                    <p>Start by registering your first visitor above.</p>
-                </div>
+            <div class="stat-card">
+              <h3 id="todayVisitors">0</h3>
+              <p>Today's Visitors</p>
             </div>
+            <div class="stat-card">
+              <h3 id="activeVisitors">0</h3>
+              <p>Currently Inside</p>
+            </div>
+          </div>
+          <div class="filter-section">
+            <div class="filter-group">
+              <label for="fromDate">From Date</label>
+              <input type="date" id="fromDate" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label for="toDate">To Date</label>
+              <input type="date" id="toDate" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label for="purposeFilter">Purpose</label>
+              <select id="purposeFilter" class="form-control">
+                <option value="">All Purposes</option>
+                <option value="Business Meeting">Business Meeting</option>
+                <option value="Interview">Interview</option>
+                <option value="Delivery">Delivery</option>
+                <option value="Maintenance">Maintenance</option>
+                <option value="Consultation">Consultation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 10px">
+              <button
+                onclick="FilterManager.filterVisitors()"
+                class="btn btn-primary"
+              >
+                <i class="fas fa-filter"></i> Filter
+              </button>
+              <button
+                onclick="FilterManager.resetFilters()"
+                class="btn btn-secondary"
+              >
+                <i class="fas fa-times"></i> Reset
+              </button>
+              <button
+                onclick="ProfessionalPDFManager.generatePDF()"
+                class="btn btn-success"
+              >
+                <i class="fas fa-file-pdf"></i> Export PDF
+              </button>
+            </div>
+          </div>
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading visitors...</p>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="visitor-table" id="visitorTable">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Company</th>
+                  <th>Phone</th>
+                  <th>Purpose</th>
+                  <th>Host</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="visitorList"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination">
+            <button onclick="prevPage()" class="btn btn-secondary">
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span id="pageInfo"></span>
+            <button onclick="nextPage()" class="btn btn-secondary">
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="empty-state" id="emptyState" style="display: none">
+            <i class="fas fa-users"></i>
+            <h3>No visitors found</h3>
+            <p>Start by registering your first visitor above.</p>
+          </div>
         </div>
+      </div>
     </div>
 
     <!-- Edit Visitor Modal -->
     <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-edit"></i> Edit Visitor</h2>
-                <span class="close" onclick="closeModal('editModal')">&times;</span>
-            </div>
-            <form id="editForm">
-                <input type="hidden" id="editVisitorId">
-                <div class="form-group">
-                    <label for="editName"><i class="fas fa-user"></i> Full Name *</label>
-                    <input type="text" id="editName" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="editCompany"><i class="fas fa-briefcase"></i> Company/Organization</label>
-                    <input type="text" id="editCompany" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="editPhone"><i class="fas fa-phone"></i> Phone Number *</label>
-                    <input type="tel" id="editPhone" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="editEmail"><i class="fas fa-envelope"></i> Email Address</label>
-                    <input type="email" id="editEmail" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="editPurpose"><i class="fas fa-clipboard-list"></i> Purpose of Visit *</label>
-                    <select id="editPurpose" class="form-control" required>
-                        <option value="">Select purpose</option>
-                        <option value="Business Meeting">Business Meeting</option>
-                        <option value="Interview">Interview</option>
-                        <option value="Delivery">Delivery</option>
-                        <option value="Maintenance">Maintenance</option>
-                        <option value="Consultation">Consultation</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editToMeet"><i class="fas fa-user-tie"></i> Person to Meet *</label>
-                    <input type="text" id="editToMeet" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="editDepartment"><i class="fas fa-building"></i> Department</label>
-                    <input type="text" id="editDepartment" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    <i class="fas fa-save"></i> Update Visitor
-                </button>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-edit"></i> Edit Visitor</h2>
+          <span class="close" onclick="closeModal('editModal')">&times;</span>
         </div>
+        <form id="editForm">
+          <input type="hidden" id="editVisitorId" />
+          <div class="form-group">
+            <label for="editName"
+              ><i class="fas fa-user"></i> Full Name *</label
+            >
+            <input type="text" id="editName" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="editCompany"
+              ><i class="fas fa-briefcase"></i> Company/Organization</label
+            >
+            <input type="text" id="editCompany" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="editPhone"
+              ><i class="fas fa-phone"></i> Phone Number *</label
+            >
+            <input type="tel" id="editPhone" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="editEmail"
+              ><i class="fas fa-envelope"></i> Email Address</label
+            >
+            <input type="email" id="editEmail" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="editPurpose"
+              ><i class="fas fa-clipboard-list"></i> Purpose of Visit *</label
+            >
+            <select id="editPurpose" class="form-control" required>
+              <option value="">Select purpose</option>
+              <option value="Business Meeting">Business Meeting</option>
+              <option value="Interview">Interview</option>
+              <option value="Delivery">Delivery</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Consultation">Consultation</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editToMeet"
+              ><i class="fas fa-user-tie"></i> Person to Meet *</label
+            >
+            <input type="text" id="editToMeet" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="editDepartment"
+              ><i class="fas fa-building"></i> Department</label
+            >
+            <input type="text" id="editDepartment" class="form-control" />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            <i class="fas fa-save"></i> Update Visitor
+          </button>
+        </form>
+      </div>
     </div>
 
     <!-- Gate Pass Modal -->
     <div id="gatePassModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-id-card"></i> Visitor Gate Pass</h2>
-                <span class="close" onclick="closeModal('gatePassModal')">&times;</span>
-            </div>
-            <div id="gatePassContent" class="gate-pass">
-                <!-- Gate pass content will be generated here -->
-            </div>
-            <div style="text-align: center; margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
-                <button onclick="downloadGatePass()" class="btn btn-success">
-                    <i class="fas fa-download"></i> Download Gate Pass
-                </button>
-                <button onclick="printGatePass()" class="btn btn-info">
-                    <i class="fas fa-print"></i> Print Gate Pass
-                </button>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-id-card"></i> Visitor Gate Pass</h2>
+          <span class="close" onclick="closeModal('gatePassModal')"
+            >&times;</span
+          >
         </div>
+        <div id="gatePassContent" class="gate-pass">
+          <!-- Gate pass content will be generated here -->
+        </div>
+        <div
+          style="
+            text-align: center;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+          "
+        >
+          <button onclick="GatePassManager.downloadGatePass()" class="btn btn-success">
+            <i class="fas fa-download"></i> Download Gate Pass
+          </button>
+          <button onclick="GatePassManager.printGatePass()" class="btn btn-info">
+            <i class="fas fa-print"></i> Print Gate Pass
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Visitor Details Modal -->
     <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-user"></i> Visitor Details</h2>
-                <span class="close" onclick="closeModal('detailsModal')">&times;</span>
-            </div>
-            <div id="detailsContent" class="visitor-card">
-                <!-- Details will be generated here -->
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-user"></i> Visitor Details</h2>
+          <span class="close" onclick="closeModal('detailsModal')"
+            >&times;</span
+          >
         </div>
+        <div id="detailsContent" class="visitor-card">
+          <!-- Details will be generated here -->
+        </div>
+      </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <!-- Added Footer Section -->
     <footer class="bg-gray-800 text-white py-8 mt-8">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-wrap justify-center items-center">
-                <div class="w-full md:w-1/3 mb-6 md:mb-0 text-center">
-                    <div class="flex justify-center items-center">
-                        <i class="fas fa-building text-3xl mr-3"></i>
-                        <div>
-                            <h3 class="text-xl font-bold">Visitor Management System</h3>
-                            <p class="text-gray-400">Professional Visitor Solutions</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/3 mb-6 md:mb-0 text-center">
-                    <h4 class="text-lg font-semibold mb-3">Contact Info</h4>
-                    <div class="space-y-2">
-                        <p><i class="fas fa-map-marker-alt mr-2"></i>123 Business Street, Suite 100</p>
-                        <p>New York, NY 10001</p>
-                        <p><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</p>
-                        <p><i class="fas fa-envelope mr-2"></i>info@visitormanagement.com</p>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/3 text-center">
-                    <h4 class="text-lg font-semibold mb-3">Follow Us</h4>
-                    <div class="flex justify-center space-x-4">
-                        <a href="#" class="hover:text-gray-400"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="hover:text-gray-400"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="hover:text-gray-400"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="hover:text-gray-400"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap justify-center items-center">
+          <div class="w-full md:w-1/3 mb-6 md:mb-0 text-center">
+            <div class="flex justify-center items-center">
+              <i class="fas fa-building text-3xl mr-3"></i>
+              <div>
+                <h3 class="text-xl font-bold">Visitor Management System</h3>
+                <p class="text-gray-400">Professional Visitor Solutions</p>
+              </div>
             </div>
-            <div class="border-t border-gray-700 mt-6 pt-6 text-center">
-                <p class="text-sm text-gray-400">&copy; 2024 Visitor Management System. All rights reserved.</p>
+          </div>
+          <div class="w-full md:w-1/3 mb-6 md:mb-0 text-center">
+            <h4 class="text-lg font-semibold mb-3">Contact Info</h4>
+            <div class="space-y-2">
+              <p>
+                <i class="fas fa-map-marker-alt mr-2"></i>123 Business Street,
+                Suite 100
+              </p>
+              <p>New York, NY 10001</p>
+              <p><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</p>
+              <p>
+                <i class="fas fa-envelope mr-2"></i>info@visitormanagement.com
+              </p>
             </div>
+          </div>
+          <div class="w-full md:w-1/3 text-center">
+            <h4 class="text-lg font-semibold mb-3">Follow Us</h4>
+            <div class="flex justify-center space-x-4">
+              <a href="#" class="hover:text-gray-400"
+                ><i class="fab fa-facebook-f"></i
+              ></a>
+              <a href="#" class="hover:text-gray-400"
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a href="#" class="hover:text-gray-400"
+                ><i class="fab fa-linkedin-in"></i
+              ></a>
+              <a href="#" class="hover:text-gray-400"
+                ><i class="fab fa-instagram"></i
+              ></a>
+            </div>
+          </div>
         </div>
+        <div class="border-t border-gray-700 mt-6 pt-6 text-center">
+          <p class="text-sm text-gray-400">
+            &copy; 2024 Visitor Management System. All rights reserved.
+          </p>
+        </div>
+      </div>
     </footer>
 
-    <script src="./Visitor-management.js"></script>
-</body>
+    <!-- <script src="./Visitor-management.js"></script>
+     <script type="module" src="./main.js"></script> -->
+    <script src="./js/utils.js"></script>
+    <script src="./js/camera-manager.js"></script>
+    <script src="./js/visitor-manager.js"></script>
+    <script src="./js/display-manager.js"></script>
+    <script src="./js/gatepass-manager.js"></script>
+    <script src="./js/filter-manager.js"></script>
+    <script src="./js/stats-manager.js"></script>
+    <script src="./js/pdf-manager.js"></script>
+    <script src="./js/export-manager.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
 </html>
