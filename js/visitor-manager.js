@@ -159,7 +159,7 @@ class VisitorManager {
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">
                         <i class="fas fa-save"></i> Update Visitor
                     </button>
-                    <button type="button" onclick="cancelEdit()" class="btn btn-secondary" style="width: 100%;">
+                    <button type="button" onclick="VisitorManager.cancelEdit()" class="btn btn-secondary" style="width: 100%;">
                         <i class="fas fa-times"></i> Cancel Edit
                     </button>
                 `;
@@ -184,34 +184,37 @@ class VisitorManager {
         showToast('Edit cancelled');
     }
 
-    static showVisitorDetails(visitorId) {
-        try {
-            const visitor = allVisitors.find(v => v.id === visitorId);
-
-            if (visitor) {
-                const detailsContent = document.getElementById('detailsContent');
-                detailsContent.innerHTML = `
-                    <div class="visitor-card-header">
-                        <img src="${companyLogoUrl}" alt="Company Logo" class="company-logo">
-                        <img src="${visitor.photo || 'https://via.placeholder.com/120?text=No+Photo'}" alt="${visitor.name}" class="visitor-photo">
-                        <h3>${visitor.name}</h3>
-                        <p>${visitor.company || 'N/A'}</p>
-                    </div>
-                    <div class="visitor-card-body">
-                        <p><strong>Phone:</strong> ${visitor.phone}</p>
-                        <p><strong>Email:</strong> ${visitor.email || 'N/A'}</p>
-                        <p><strong>Purpose:</strong> ${visitor.purpose}</p>
-                        <p><strong>Host:</strong> ${visitor.toMeet}</p>
-                        <p><strong>Department:</strong> ${visitor.department || 'N/A'}</p>
-                        <p><strong>Check In:</strong> ${new Date(visitor.checkInTime).toLocaleString()}</p>
-                        <p><strong>Check Out:</strong> ${visitor.checkOutTime ? new Date(visitor.checkOutTime).toLocaleString() : 'Still inside'}</p>
-                        <p><strong>Status:</strong> <span class="status-badge ${visitor.status === 'active' ? 'status-active' : 'status-completed'}">${visitor.status === 'active' ? 'Inside' : 'Completed'}</span></p>
-                    </div>
-                `;
-                openModal('detailsModal');
-            }
-        } catch (error) {
-            showToast("Error loading visitor details", true);
-        }
+ static showVisitorDetails(visitorId) {
+  try {
+    const visitor = allVisitors.find(v => v.id === visitorId);
+    if (visitor) {
+      const detailsContent = document.getElementById('detailsContent');
+      detailsContent.innerHTML = `
+        <div class="visitor-card-header">
+          <img src="${companyLogoUrl}" alt="Company Logo" class="company-logo">
+          <img src="${visitor.photo || 'https://via.placeholder.com/120?text=No+Photo'}" alt="${visitor.name}" class="visitor-photo">
+          <h3>${visitor.name}</h3>
+          <p>${visitor.company || 'Independent Visitor'}</p>
+        </div>
+        <div class="visitor-card-body">
+          <p><strong>Phone:</strong> ${visitor.phone}</p>
+          <p><strong>Email:</strong> ${visitor.email || 'N/A'}</p>
+          <p><strong>Purpose:</strong> ${visitor.purpose}</p>
+          <p><strong>Host:</strong> ${visitor.toMeet}</p>
+          <p><strong>Department:</strong> ${visitor.department || 'N/A'}</p>
+          <p><strong>Check In:</strong> ${new Date(visitor.checkInTime).toLocaleString()}</p>
+          <p><strong>Check Out:</strong> ${visitor.checkOutTime ? new Date(visitor.checkOutTime).toLocaleString() : 'Still inside'}</p>
+          <p><strong>Status:</strong>
+            <span class="status-badge ${visitor.status === 'active' ? 'status-active' : 'status-completed'}">
+              ${visitor.status === 'active' ? 'Inside Premises' : 'Completed Visit'}
+            </span>
+          </p>
+        </div>
+      `;
+      ModalManager.open('detailsModal');
     }
+  } catch (error) {
+    showToast("Error loading visitor details", true);
+  }
+}
 }
