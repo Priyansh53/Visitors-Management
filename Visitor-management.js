@@ -722,7 +722,7 @@ function generatePDF() {
             doc.text('VISITOR MANAGEMENT REPORT', centerX, 14, { align: 'center' });
             doc.setFontSize(10);
             doc.setFont(undefined, 'normal');
-            doc.addImage(companyLogoUrl, 'PNG', 20, 3.5, 30, 15);    
+            doc.addImage(companyLogoUrl, 'PNG', 20, 3.5, 50, 15);               
             doc.text(`Page ${pageNumber} of ${totalPages}`, width - 20, 14, { align: 'right' });
         }
 
@@ -732,7 +732,7 @@ function generatePDF() {
             doc.line(20, 190, width - 20, 190);
             doc.setTextColor(...grayColor);
             doc.setFontSize(9);
-            doc.text('Professional Visitor Management System', 20, 195);
+            doc.text('CHEM Process systems Pvt. Ltd', 20, 195);
             doc.text(`Generated on ${new Date().toLocaleString()}`, 20, 200);
             doc.text('Confidential Document - For Internal Use Only', width - 20, 200, { align: 'right' });
         }
@@ -746,19 +746,30 @@ function generatePDF() {
             month: 'long',
             day: 'numeric'
         });
-        let yPosition = 30;
-        doc.text(`Report Generated: ${reportDate}`, 20, yPosition);
-        yPosition += 7;
-        doc.text(`Total Visitors: ${visitorsForPDF.length}`, 20, yPosition);
-        if (fromDate && toDate) {
-            yPosition += 7;
-            doc.text(`Date Range: ${new Date(fromDate).toLocaleDateString()} to ${new Date(toDate).toLocaleDateString()}`, 20, yPosition);
-        }
-        if (purposeFilter) {
-            yPosition += 7;
-            doc.text(`Purpose Filter: ${purposeFilter}`, 20, yPosition);
-        }
+        let yPosition = 40;
+doc.setFont(undefined, 'bold');
+doc.text(`Report Generated:`, 20, yPosition);
+doc.setFont(undefined, 'normal');
+doc.text(reportDate, doc.getTextWidth('Report Generated: ') + 30, yPosition);
 
+yPosition += 10; // Increased spacing between rows
+doc.setFont(undefined, 'bold'); 
+doc.text(`Total Visitors:`, 20, yPosition);
+doc.setFont(undefined, 'bold'); // Keep Total Visitors count bold
+doc.text(`${visitorsForPDF.length}`, doc.getTextWidth('Total Visitors: ') + 37, yPosition);
+
+if (fromDate && toDate) {
+    yPosition += 10; // Increased spacing between rows
+    doc.setFont(undefined, 'bold');
+    doc.text(`Date Range:`, 20, yPosition);
+    doc.setFont(undefined, 'bold'); // Keep date range bold
+    doc.text(`${new Date(fromDate).toLocaleDateString()} to ${new Date(toDate).toLocaleDateString()}`, doc.getTextWidth('Date Range: ') + 40, yPosition);
+}
+
+if (purposeFilter) {
+    yPosition += 7;
+    doc.text(`Purpose Filter: ${purposeFilter}`, 20, yPosition);
+}
         const startY = yPosition + 10;
         let currentY = startY;
         const rowHeight = 12;
@@ -920,7 +931,7 @@ function generatePDF() {
             doc.setFontSize(16);
             doc.setFont(undefined, 'bold');
             doc.setTextColor(...textColor);
-            doc.text('VISITOR SUMMARY', 20, 30);
+            doc.text('VISITOR SUMMARY :', 20, 30);
 
             doc.setFontSize(12);
             doc.setFont(undefined, 'normal');
@@ -940,8 +951,10 @@ function generatePDF() {
             doc.text(`Completed Visits: ${completedCount}`, 20, summaryY);
             summaryY += 15;
 
+            doc.setFontSize(16);
             doc.setFont(undefined, 'bold');
-            doc.text('Purpose Breakdown:', 20, summaryY);
+            doc.text('Purpose Breakdown :', 20, summaryY);
+            doc.setFontSize(12);
             doc.setFont(undefined, 'normal');
             summaryY += 10;
 
